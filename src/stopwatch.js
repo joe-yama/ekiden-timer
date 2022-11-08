@@ -59,7 +59,7 @@ resetButton.addEventListener("click", function () {
 });
 
 function lapping(runnerName) {
-  const lapTime = Date.now() - startAt + elapsedTimeAtLastStopped;
+  const lapTime = startAt ? Date.now() - startAt + elapsedTimeAtLastStopped : 0;
   var result = new Array();
   result.push(runnerName);
   result.push(dateToString(lapTime));
@@ -73,15 +73,11 @@ function lapping(runnerName) {
 }
 
 lapButton.addEventListener("click", function () {
-  startButton.disabled = true;
-  lapButton.disabled = false;
-  stopButton.disabled = false;
-  resetButton.disabled = true;
-  lapping("runner");
+  lapping("anonymous");
 });
 
 downloadButton.addEventListener("click", function () {
-  outputStr = "name, time";
+  outputStr = "name, time\n";
   for (var i = 0; i < results.length; i++) {
     for (var j = 0; j < results[i].length; j++) {
       outputStr += results[i][j];
