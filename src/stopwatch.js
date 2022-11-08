@@ -56,6 +56,9 @@ resetButton.addEventListener("click", function () {
   time.textContent = "00:00:00.000";
   elapsedTimeAtLastStopped = 0;
   results = Array();
+
+  // delete table
+  while (table.rows.length > 1) table.deleteRow(table.rows.length - 1);
 });
 
 function lapping(runnerName) {
