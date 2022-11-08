@@ -50,7 +50,7 @@ stopButton.addEventListener("click", function () {
 // リセットボタンがクリックされたら時間を0に戻す
 resetButton.addEventListener("click", function () {
   startButton.disabled = false;
-  lapButton.disabled = true;
+  lapButton.disabled = false;
   stopButton.disabled = true;
   resetButton.disabled = true;
   time.textContent = "00:00:00.000";

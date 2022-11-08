@@ -15,7 +15,7 @@ h1 {
 #container,
 #runners_container {
   background-color: #ffffff;
-  width: 540px;
+  width: 300px;
   border-radius: 1rem;
   margin: 0 auto;
   padding: 1.5rem;
@@ -23,7 +23,7 @@ h1 {
 
 #timelogbox {
   background-color: #ffffff;
-  width: 540px;
+  width: 300px;
   border-radius: 1rem;
   margin: 0 auto;
   padding: 1.5rem;
@@ -31,7 +31,7 @@ h1 {
 
 #time {
   color: #1e90ff;
-  font-size: 3rem;
+  font-size: 2rem;
   text-align: center;
   padding: 1rem;
   border-radius: 1rem;
