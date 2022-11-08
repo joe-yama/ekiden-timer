@@ -33,6 +33,7 @@ startButton.addEventListener("click", () => {
   lapButton.disabled = false;
   stopButton.disabled = false;
   resetButton.disabled = true;
+  addButton.disabled = true;
   startAt = Date.now();
   run_stopwatch();
 });
@@ -43,6 +44,7 @@ stopButton.addEventListener("click", function () {
   lapButton.disabled = true;
   stopButton.disabled = true;
   resetButton.disabled = false;
+  addButton.disabled = false;
   clearTimeout(timeoutID);
   elapsedTimeAtLastStopped += Date.now() - startAt;
 });
@@ -53,6 +55,7 @@ resetButton.addEventListener("click", function () {
   lapButton.disabled = false;
   stopButton.disabled = true;
   resetButton.disabled = true;
+  addButton.disabled = false;
   time.textContent = "00:00:00.000";
   elapsedTimeAtLastStopped = 0;
   results = Array();
@@ -72,7 +75,6 @@ function lapping(runnerName) {
     <td>${runnerName}</td>
     <td>${dateToString(lapTime)}</td>`;
   table.appendChild(row);
-  console.log(results.toString());
 }
 
 lapButton.addEventListener("click", function () {
@@ -100,6 +102,7 @@ downloadButton.addEventListener("click", function () {
 
 addButton.addEventListener("click", function () {
   runnerName = document.getElementById("runner").value;
+  if (runnerName == "") return;
   var button = document.createElement("input");
   button.type = "button";
   button.value = runnerName;
