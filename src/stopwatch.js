@@ -93,7 +93,10 @@ downloadButton.addEventListener("click", function () {
     }
     outputStr += "\n";
   }
-  var blob = new Blob([outputStr], { type: "text/csv" });
+  outputStrEncoded = Encoding.stringToCode(outputStr);
+  outputStrSjis = Encoding.convert(outputStrEncoded, "sjis", "unicode");
+  u8a = new Uint8Array(outputStrSjis);
+  var blob = new Blob([u8a], { type: "text/csv" });
   var link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = "results.csv";
