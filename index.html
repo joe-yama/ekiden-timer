@@ -17,7 +17,7 @@
   <body>
     <h1>Ekiden Timer</h1>
     <div id="container">
-      <div id="time">00:00:00.000</div>
+      <div id="time">00:00:00</div>
       <div id="buttons">
         <input id="start" type="button" value="start" />
         <input id="lap" type="button" value="lap" />
@@ -28,17 +28,20 @@
     <br />
     <div id="runners_container">
       <input id="runner" type="text" value="" />
-      <input id="add" type="button" value="add" /><br />
+      <input id="add" type="button" value="add runner" /><br />
     </div>
     <br />
     <div id="timelogbox">
       <table id="table">
         <tr¥h>
-          <th>NAME</th>
-          <th>ELAPSED_TIME</th>
+          <th>name</th>
+          <th>lap</th>
+          <th>elapsed time</th>
+          <th>lap time</th>
         </tr>
       </table>
-      <input id="download" type="button" value="download" />
+      <!-- <input id="download" type="button" value="download" /> -->
+      <p><small>※ download button will be coming soon!</small></p>
     </div>
     <br />
     <script src="src/encoding.js"></script>
