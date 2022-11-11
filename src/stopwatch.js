@@ -10,8 +10,18 @@ const runnersContainer = document.getElementById("runners_container");
 
 let startAt;
 let elapsedTimeAtLastStopped = 0;
-let runner2results = {};
-let runner2lapTimes = {};
+
+let runner2id = {};
+let laps = [];
+let elapsedtimes = [];
+let laptimes = [];
+let trends = [];
+
+if (!Array.prototype.last) {
+  Array.prototype.last = function () {
+    return this[this.length - 1];
+  };
+}
 
 function dateToString(unix_timestamp) {
   const d = new Date(unix_timestamp);
@@ -57,56 +67,52 @@ resetButton.addEventListener("click", function () {
   stopButton.disabled = true;
   resetButton.disabled = true;
   addButton.disabled = false;
-  time.textContent = "00:00:00.000";
+  time.textContent = "00:00:00";
   elapsedTimeAtLastStopped = 0;
-  results = Array();
+
+  runner2id = {};
+  laps = [];
+  elapsedtimes = [];
+  laptimes = [];
+  trends = [];
 
   // delete table
   while (table.rows.length > 1) table.deleteRow(table.rows.length - 1);
 });
 
 function lapping(runnerName) {
-  const elapsedTimeFromStart = startAt
+  const elapsedtime = startAt
     ? Date.now() - startAt + elapsedTimeAtLastStopped
     : 0;
-  // var result = new Array();
-  // result.push(runnerName);
-  // result.push(dateToString(lapTime));
-  // results.push(result);
-  if (!(runnerName in runner2results)) {
-    runner2results[runnerName] = [
-      {
-        runnerName: runnerName,
-        elapsed: elapsedTimeFromStart,
-        lap: 1,
-        lapTime: 0,
-        avgLapTime: undefined,
-      },
-    ];
-    runner2lapTimes[runnerName] = [];
-    console.log(runner2results[runnerName]);
-  } else {
-    const pre =
-      runner2results[runnerName][runner2results[runnerName].length - 1];
-    result = {
-      runnerName: runnerName,
-      elapsed: elapsedTimeFromStart,
-      lap: pre["lap"] + 1,
-      lapTime: elapsedTimeFromStart - pre["elapsed"],
-    };
-    runner2lapTimes[runnerName].push(elapsedTimeFromStart - pre["elapsed"]);
-    const lapTimes = runner2lapTimes[runnerName];
-    result["avgLapTime"] =
-      lapTimes.reduce((a, b) => a + b, 0) / lapTimes.length || 0;
-    runner2results[runnerName].push(result);
+  if (!(runnerName in runner2id)) {
+    const runnerid = Object.keys(runner2id).length;
+    runner2id[runnerName] = runnerid;
+    laps[runnerid] = 0;
+    elapsedtimes[runnerid] = [];
+    laptimes[runnerid] = [];
+    trends[runnerid] = [];
   }
+  const runnerid = runner2id[runnerName];
+  laps[runnerid] += 1;
+  if (laps[runnerid] > 1) {
+    const laptime = elapsedtime - elapsedtimes[runnerid].last();
+    if (laps[runnerid] > 2) {
+      const trend = Math.round((laptimes[runnerid].last() - laptime) / 1000);
+      trends[runnerid].push(trend);
+    }
+    laptimes[runnerid].push(laptime);
+  }
+  elapsedtimes[runnerid].push(elapsedtime);
+
   const row = document.createElement("tr");
-  const cur = runner2results[runnerName][runner2results[runnerName].length - 1];
   row.innerHTML = `
     <td>${runnerName}</td>
-    <td>${cur["lap"].toString()}</td>
-    <td>${dateToString(cur["elapsed"])}</td>
-    <td>${dateToString(cur["lapTime"])}</td>`;
+    <td>${laps[runnerid].toString()}</td>
+    <td>${dateToString(elapsedtimes[runnerid].last())}</td>
+    <td>${
+      laps[runnerid] > 1 ? dateToString(laptimes[runnerid].last()) : "-"
+    }</td>
+    <td>${laps[runnerid] > 2 ? trends[runnerid].last() : "-"}</td>`;
   table.appendChild(row);
 }
 
@@ -115,18 +121,21 @@ lapButton.addEventListener("click", function () {
 });
 
 downloadButton.addEventListener("click", function () {
-  // TODO: implement
-  outputStr = "name, time\n";
-  for (var i = 0; i < results.length; i++) {
-    for (var j = 0; j < results[i].length; j++) {
-      outputStr += results[i][j];
-      if (j == results[i].length - 1) {
-        break;
-      }
-      outputStr += ", ";
-    }
+  outputStr = "name, ";
+  for (var i = 1; i <= Math.max(laps); i++) {
+    outputStr += i.toString() + ", ";
+  }
+  outputStr += "\n";
+
+  for (const [runnerName, runnerid] of Object.entries(runner2id)) {
+    outputStr += runnerName + ", ";
+    elapsedtimes[runnerid].forEach((elapsedtime) => {
+      outputStr += dateToString(elapsedtime) + ", ";
+    });
     outputStr += "\n";
   }
+
+  // encode to sjis
   outputStrEncoded = Encoding.stringToCode(outputStr);
   outputStrSjis = Encoding.convert(outputStrEncoded, "sjis", "unicode");
   u8a = new Uint8Array(outputStrSjis);
@@ -138,9 +147,9 @@ downloadButton.addEventListener("click", function () {
 });
 
 addButton.addEventListener("click", function () {
-  textbox = document.getElementById("runner");
+  const textbox = document.getElementById("runner");
   if (textbox.value == "") return;
-  var button = document.createElement("input");
+  const button = document.createElement("input");
   button.type = "button";
   button.value = textbox.value;
   button.onclick = function () {
