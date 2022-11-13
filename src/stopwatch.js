@@ -7,7 +7,7 @@ const downloadButton = document.getElementById("download");
 const addButton = document.getElementById("add");
 const table = document.getElementById("table");
 const runnersContainer = document.getElementById("runners_container");
-// const encodingRadioButton = document.getElementsByName("encoding");
+const encodingRadioButton = document.getElementsByName("encoding");
 
 let startAt;
 let elapsedTimeAtLastStopped = 0;
@@ -142,12 +142,16 @@ downloadButton.addEventListener("click", function () {
     });
     outputStr += "\n";
   }
-  // const shouldSjis = encodingRadioButton[0].checked;
-  // console.log(shouldSjis);
-  // encode to sjis
-  outputStrEncoded = Encoding.stringToCode(outputStr);
-  outputStrSjis = Encoding.convert(outputStrEncoded, "sjis", "unicode");
-  u8a = new Uint8Array(outputStrSjis);
+  const shouldSjis = encodingRadioButton[0].checked;
+  console.log(shouldSjis);
+  if (shouldSjis) {
+    // encode to sjis
+    outputStrEncoded = Encoding.stringToCode(outputStr);
+    outputStrSjis = Encoding.convert(outputStrEncoded, "sjis", "unicode");
+    u8a = new Uint8Array(outputStrSjis);
+  } else {
+    u8a = outputStr;
+  }
   var blob = new Blob([u8a], { type: "text/csv" });
   var link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
