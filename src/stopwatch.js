@@ -7,6 +7,7 @@ const downloadButton = document.getElementById("download");
 const addButton = document.getElementById("add");
 const table = document.getElementById("table");
 const runnersContainer = document.getElementById("runners_container");
+// const encodingRadioButton = document.getElementsByName("encoding");
 
 let startAt;
 let elapsedTimeAtLastStopped = 0;
@@ -97,7 +98,7 @@ function lapping(runnerName) {
   if (laps[runnerid] > 1) {
     const laptime = elapsedtime - elapsedtimes[runnerid].last();
     if (laps[runnerid] > 2) {
-      const trend = Math.round((laptimes[runnerid].last() - laptime) / 1000);
+      const trend = Math.round((laptime - laptimes[runnerid].last()) / 1000);
       trends[runnerid].push(trend);
     }
     laptimes[runnerid].push(laptime);
@@ -105,14 +106,21 @@ function lapping(runnerName) {
   elapsedtimes[runnerid].push(elapsedtime);
 
   const row = document.createElement("tr");
+  const lapsStr = laps[runnerid].toString();
+  const elapsedtimeStr = dateToString(elapsedtimes[runnerid].last());
+  const lapTimeStr =
+    laps[runnerid] > 1 ? dateToString(laptimes[runnerid].last()) : "-";
+  const trend = trends[runnerid].last();
+  const trendSign = trend > 0 ? "+" : trend < 0 ? "-" : "±";
+  const trendStr =
+    laps[runnerid] > 2
+      ? " (" + trendSign + Math.abs(trend).toString() + "sec)"
+      : "";
   row.innerHTML = `
     <td>${runnerName}</td>
-    <td>${laps[runnerid].toString()}</td>
-    <td>${dateToString(elapsedtimes[runnerid].last())}</td>
-    <td>${
-      laps[runnerid] > 1 ? dateToString(laptimes[runnerid].last()) : "-"
-    }</td>
-    <td>${laps[runnerid] > 2 ? trends[runnerid].last() : "-"}</td>`;
+    <td>${lapsStr}</td>
+    <td>${elapsedtimeStr}</td>
+    <td>${lapTimeStr}${trendStr}</td>`;
   table.appendChild(row);
 }
 
@@ -134,7 +142,8 @@ downloadButton.addEventListener("click", function () {
     });
     outputStr += "\n";
   }
-
+  // const shouldSjis = encodingRadioButton[0].checked;
+  // console.log(shouldSjis);
   // encode to sjis
   outputStrEncoded = Encoding.stringToCode(outputStr);
   outputStrSjis = Encoding.convert(outputStrEncoded, "sjis", "unicode");
